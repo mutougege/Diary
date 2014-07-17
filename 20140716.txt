@@ -1,0 +1,15 @@
+1.将2014-03-20转换为2014年03月20日
+
+	public static String DataFormats(String strData){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df = null;
+        Date d = null;
+		try {
+			d = sdf.parse(strData);
+			df = new SimpleDateFormat("yyyy月MM年dd日");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+      
+        return df.format(d);
+	}
