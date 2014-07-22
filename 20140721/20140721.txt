@@ -1,0 +1,20 @@
+1. webView 和 js 交互
+
+1）html中的js调用Android本地java方法：首先要对webview对象绑定javascriptInterface，js脚本通过这个接口来调用java代码。
+	contentWebView.addJavascriptInterface(this, "wst");  
+
+javainterface实际就是一个普通的java类，里面是我们本地实现的java代码， 将object 传递给webview，并指定别名，这样js脚本就可以通过我们给的这个别名来调用我们的方法,在上面的代码中，this是实例化的对象，wst是这个对象在js中的别名
+
+2）android中调用html中的js脚本非常方便，只需要使用webView中的loadUrl方法即可（注意开启js支持）
+		// 启用javascript
+		
+		contentWebView.getSettings().setJavaScriptEnabled(true);
+		
+		// 从assets目录下面的加载html
+		
+		contentWebView.loadUrl("file:///android_asset/wst.html");
+
+              
+  		// 无参数调用
+js脚本	        
+		contentWebView.loadUrl("javascript:javacalljs()");
