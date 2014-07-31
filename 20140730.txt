@@ -1,0 +1,54 @@
+1. ContentProvider ContentObserver ContentResolver 关系与使用
+
+一、ContentProvider ContentObserver ContentResolver简介
+    ContentProvider：当应用继承ContentProvider类，并重写该类用于提供数据和存储数据的方法（基本上就是insert、delete、update、query四个方法），就可以向其他应用共享其数据。虽然使用其他方法也可以对外共享数据，但数据访问方式会因数据存储的方式而不同，如：采用文件方式对外共享数据，需要进行文件操作读写数据；采用sharedpreferences共享数据，需要使用sharedpreferences API读写数据。而使用ContentProvider共享数据的好处是统一了数据访问方式。
+	
+	ContentResolver：当外部应用需要对ContentProvider中的数据进行添加、删除、修改和查询操作时，可以使用ContentResolver 类来完成，要获取ContentResolver 对象，可以使用Activity提供的getContentResolver()方法。 ContentResolver使用insert、delete、update、query方法，来操作数据。例如：
+	contentResolver = getContentResolver();
+	Cursor cursor = contentResolver.query(uri, projection, selection, selectionArgs, sortOrder);
+	
+	ContentObserver：内容观察者，目的是观察(捕捉)特定Uri中发生的数据变化，继而做一些相应的处理。使用ContentObserver观察特定Uri的步骤如下：
+	 1、 创建自己的ContentObserver派生类，必须重载两个方法，一个是构造方法，一个是onChange()方法。
+		 构造方法 ContentObserver(Handler handler)
+		 说明：所有ContentObserver的派生类都需要调用该构造方法
+	　　 参数：handler Handler对象。可以是主线程Handler(这时候可以更新UI 了)，也可以是任何Handler对象。
+		 void onChange(boolean selfChange) 
+		 功能：当观察到的Uri发生变化时，系统回调该方法去做处理。
+     2、 利用context.getContentResolover()获得ContentResolove对象，接着调用registerContentObserver(uri, notifyForDescendents, observer)方法去注册内容观察者。
+		uri表示需要观察的Uri
+		notifyForDescendents 为false 表示精确匹配，即只匹配该Uri。 为true 表示可以同时匹配其派生的Uri。
+     3、 由于ContentObserver的生命周期不同步于Activity和Service等，因此，在不需要时，需要手动的调用unregisterContentObserver()去取消注册。
+	
+
+二、Uri类简介
+    Uri标识要操作的数据，主要包含了两部分信息：1.需要操作的ContentProvider ，2.对ContentProvider中的什么数据进行操作，一个Uri由以下几部分组成：
+
+		1.scheme：ContentProvider的scheme已经由Android所规定为：content://。
+		2.Authority（主机名）：用于唯一标识ContentProvider，外部调用者可以根据这个标识来找到它。
+		3.path（路径）：表示要操作的数据，路径的构建应根据业务而定，例如：
+		•         要操作contact表中id为10的记录，可以构建这样的路径:/contact/10
+		•         要操作contact表中id为10的记录的name字段， contact/10/name
+		•         要操作contact表中的所有记录，可以构建这样的路径:/contact
+
+	Uri在ContentProvider中使用的步骤是：
+		1. 把用到的Uri路径全部注册，使用UriMatcher类的addURI()方法，如下：
+       //创建一个全局变量uriMatcher，常量UriMatcher.NO_MATCH表示不匹配任何路径的返回码(-1)。
+       UriMatcher  uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+       //content://com.changcheng.sqlite.provider.contactprovider/contact 路径，返回匹配码为1，的添加方式
+       uriMatcher.addURI(“com.changcheng.sqlite.provider.contactprovider”, “contact”, 1);
+       //content://com.changcheng.sqlite.provider.contactprovider/contact/230 路径，返回匹配码为2，的添加方式，#号为通配符
+       uriMatcher.addURI(“com.changcheng.sqlite.provider.contactprovider”, “contact/#”, 2);
+	   
+	   2.注册完用到的Uri后，就可以使用uriMatcher.match(uri)方法对输入的Uri进行匹配，例如：
+	   ContentProvider中的public int delete(Uri uri, String where, String[] whereArgs){}方法。调用时就有一个Uri参数，我们对这个Uri进行匹配，如果匹配成功就返回匹配码，我们再根据不同的匹配码对不同的数据进行删除。假设匹配content://com.changcheng.sqlite.provider.contactprovider/contact 路径，返回的匹配码为1。
+	  
+	Uri的使用技巧
+		如果要把一个字符串转换成Uri，可以使用Uri类中的parse()方法，如下：
+		Uri uri = Uri.parse("content://com.changcheng.provider.contactprovider/contact")
+		
+		ContentUris：用于获取Uri路径后面的ID部分，它有两个比较实用的静态方法：
+		withAppendedId(uri, id)用于为路径加上ID部分
+		parseId(uri)方法用于从路径中获取ID部分
+
+       
+
