@@ -1,0 +1,17 @@
+1. Eclipse 的Git插件使用情景
+
+ 1) Eclipse创建项目，本地没库，远程没库。
+	此时先创建本地库，然后将项目提交到本地库，然后创建远程库，将项目提交到远程库。
+
+ 2) 远程库有更新，本地库和Eclipse都没更新。
+	 先设置本地库的别名，在本地库的命令行执行:
+	 git remote add origin https://github.com/test/test.git
+	再设置egit参数，在eclispe中菜单,window--preferences--team--configuration 页	面中增加branch.master.merge 值为master 
+	最后右击项目--Team--Pull 本地库和Eclipse都完成更新。
+ 
+ 3)远程库有项目，本地没库，Eclipse没项目。
+	打开Eclipse的Git Repositories窗口，点击colne 一路完事，在新出现的项目上右击选择Import Projects-----然后选择Import a general project 一路完事。本地库建好了，Eclipse中也有了。
+
+参考文章：
+http://blog.csdn.net/pandakong/article/details/7233633
+http://blog.csdn.net/pandakong/article/details/7233609
