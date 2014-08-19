@@ -1,0 +1,14 @@
+Socket client 发送流程
+
+1. Socket socket = new Socket(ipAddress, port);
+2. PrintStream output = new PrintStream(socket.getOutputStream(), true,"utf-8");
+3. output.println(msg);
+    output.flush();
+
+Socket server 接收流程
+
+1. ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
+2. 监听 Socket socket = serverSocket.accept();
+3. BufferedReader bufferedReader = 
+	new BufferedReader(new InputStreamReader(socket.getInputStream()));
+4. String content = bufferedReader.readLine()
