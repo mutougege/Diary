@@ -1,0 +1,26 @@
+1. ScrollView 嵌套listview 起始位置不是最顶部的解决办法
+listview设置不获取焦点
+lv_comments.setFocusable(false);
+lv_comments.setFocusableInTouchMode(false);
+在listview绘制好数据后使用
+scrollView.smoothScrollTo(0,0);  
+
+2. 对于icon，要切成圆角，使用
+
+将shape作为蒙版，并且shape的颜色设置为#ffffff
+paint.setXfermode(new PorterDuffXfermode(Mode.MULTIPLY));
+
+不要使用黑色蒙版和
+paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN)); 
+
+
+为了获得更好的效果，还可以使用自定义ImageView的方式
+
+
+3. 为了使ViewPager里面的各个View上面的button等组件有各自的点击响应，
+可以采用两步走的方式：第一在xml中设置 android:onclick = "clickMethodName"；
+第二步在使用该xml布局的程序中定义public void clickMethodName(View view){}的方法
+该方法就是组件点击时的响应方法。
+
+
+   
